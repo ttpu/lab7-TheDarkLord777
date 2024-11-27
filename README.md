@@ -3,9 +3,11 @@
 
 ## Team N:
 
-* Student 1: name,surname,id
+* Student 1: Maxmudbek,Muzaffarov,SE14161
 
-* Student 2: name,surname,id
+* Student 2: Yunus,Isokhonov,SE14335
+
+* Student 3: Jamoliddin,Normamatov,SE13984
 
 etc...
 
