@@ -2,17 +2,42 @@
 #include <HTTPClient.h>
 #include <Update.h>
 
-const char* ssid = "xxxxxx";           // Your Wi-Fi SSID
-const char* password = "xxxxxxx";   // Your Wi-Fi Password
+#define red 4
+#define ylw 19
+#define grn 5
+#define blu 22
+#define buttonPin 33
 
-const char* firmwareUrl = "https://xxxxxxxxxxxx.bin";  // URL to the .bin file
+const char* ssid = "Bomish";           // Your Wi-Fi SSID
+const char* password = "Yolgizim";   // Your Wi-Fi Password
+
+const char* firmwareUrl = "https://raw.githubusercontent.com/ttpu/lab7-TheDarkLord777/refs/heads/main/task2/data.bin";  // URL to the .bin file
 const float currentVersion = 1.0;    // Current firmware version
-const char* versionUrl = "https://xxxxxxxxx";  // URL to version text file
+const char* versionUrl = "https://raw.githubusercontent.com/ttpu/lab7-TheDarkLord777/refs/heads/main/task2/version";  // URL to version text file
 
+unsigned long previousMillisRed = 0; 
+unsigned long previousMillisGreen = 0;
+unsigned long previousMillisYellow = 0; 
+unsigned long previousMillisBlue = 0;
+
+const long intervalRed = 1000;  
+const long intervalGreen = 500;  
+const long intervalYellow = 3000; 
+const long intervalBlue = 5000; 
+
+// Variables for button state detection
+bool lastButtonState = HIGH;  // The previous state of the button
+unsigned long lastPressTime = 0; // Time when the button state last changed
 
 void setup() {
   Serial.begin(115200);
   Serial.println("Booting...");
+
+  pinMode(red, OUTPUT);
+  pinMode(grn, OUTPUT);
+  pinMode(blu, OUTPUT);
+  pinMode(ylw, OUTPUT);
+  pinMode(buttonPin, INPUT_PULLUP);  // Use internal pull-up resistor
 
   // Connect to Wi-Fi
   WiFi.begin(ssid, password);
@@ -30,18 +55,37 @@ void setup() {
 }
 
 void loop() {
-  // Your regular code here
-  // For example, periodically check for updates
+  // Check for firmware updates periodically
   static unsigned long lastCheck = 0;
-  const unsigned long interval = 10000;  // Check every hour (3600000 milliseconds)
-
+  const unsigned long interval = 10000;  // Check every 10 seconds
   if (millis() - lastCheck > interval) {
     lastCheck = millis();
     checkForUpdates();
   }
 
+  // Read the button state
+  bool currentButtonState = digitalRead(buttonPin) == LOW;  // Active LOW button
+  
+  // Detect button press or release
+  if (currentButtonState != lastButtonState) {
+    lastPressTime = millis();
+    if (currentButtonState) {
+      // Button was pressed
+      Serial.println("Button pressed, starting LED blink...");
+    } else {
+      // Button was released
+      Serial.println("Button released.");
+    }
+    lastButtonState = currentButtonState;
+  }
+
+  // If button is pressed, blink LEDs
+  if (currentButtonState) {
+    blinkLEDs();
+  }
 }
 
+// Function to check for firmware updates
 void checkForUpdates() {
   Serial.println("Checking for firmware updates...");
 
@@ -75,6 +119,7 @@ void checkForUpdates() {
   http.end();
 }
 
+// Function to download and apply the firmware update
 void downloadAndUpdate() {
   HTTPClient http;
 
@@ -129,4 +174,51 @@ void downloadAndUpdate() {
     Serial.println(httpCode);
   }
   http.end();
+}
+
+
+void blinkLEDs() {
+  unsigned long currentMillis = millis();
+
+ 
+  if (currentMillis - previousMillisRed >= intervalRed) {
+    previousMillisRed = currentMillis;
+    for (int i = 0; i < 5; i++) {
+      digitalWrite(red, HIGH);
+      delay(100);  // 100ms ON
+      digitalWrite(red, LOW);
+      delay(100);  // 100ms OFF
+    }
+  }
+
+
+  if (currentMillis - previousMillisGreen >= intervalGreen) {
+    previousMillisGreen = currentMillis;
+    for (int i = 0; i < 10; i++) {
+      digitalWrite(grn, HIGH);
+      delay(50);   // 50ms ON
+      digitalWrite(grn, LOW);
+      delay(50);   // 50ms OFF
+    }
+  }
+
+
+  if (currentMillis - previousMillisYellow >= intervalYellow) {
+    previousMillisYellow = currentMillis;
+    for (int i = 0; i < 3; i++) {
+      digitalWrite(ylw, HIGH);
+      delay(1000);  
+      digitalWrite(ylw, LOW);
+      delay(1000);  
+    }
+  }
+  if (currentMillis - previousMillisBlue >= intervalBlue) {
+    previousMillisBlue = currentMillis;
+    for (int i = 0; i < 2; i++) {
+      digitalWrite(blu, HIGH);
+      delay(2500);  
+      digitalWrite(blu, LOW);
+      delay(2500);  
+    }
+  }
 }
