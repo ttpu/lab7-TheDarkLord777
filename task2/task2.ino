@@ -2,17 +2,48 @@
 #include <HTTPClient.h>
 #include <Update.h>
 
-const char* ssid = "xxxxxx";           // Your Wi-Fi SSID
-const char* password = "xxxxxxx";   // Your Wi-Fi Password
+#define red 4
+#define ylw 19
+#define grn 5
+#define blu 22
+#define buttonPin 33
 
-const char* firmwareUrl = "https://xxxxxxxxxxxx.bin";  // URL to the .bin file
+const char* ssid = "Redmi 110A";           // Your Wi-Fi SSID
+const char* password = "99999999";   // Your Wi-Fi Password
+
+const char* firmwareUrl = "https://raw.githubusercontent.com/ttpu/lab7-TheDarkLord777/refs/heads/main/task2/data.bin";  // URL to the .bin file
 const float currentVersion = 1.0;    // Current firmware version
-const char* versionUrl = "https://xxxxxxxxx";  // URL to version text file
+const char* versionUrl = "https://raw.githubusercontent.com/ttpu/lab7-TheDarkLord777/refs/heads/main/task2/version";  // URL to version text file
 
+unsigned long previousMillisRed = 0; 
+unsigned long previousMillisGreen = 0;
+unsigned long previousMillisYellow = 0; 
+unsigned long previousMillisBlue = 0;
+
+const long intervalRed = 1000;  
+const long intervalGreen = 500;  
+const long intervalYellow = 3000; 
+const long intervalBlue = 5000; 
+
+
+int redState = LOW;
+int greenState = LOW;
+int yellowState = LOW;
+int blueState = LOW;
+
+// Variables for button state detection
+bool lastButtonState = LOW;  // The previous state of the button
+unsigned long lastPressTime = 0; // Time when the button state last changed
 
 void setup() {
   Serial.begin(115200);
   Serial.println("Booting...");
+
+  pinMode(red, OUTPUT);
+  pinMode(grn, OUTPUT);
+  pinMode(blu, OUTPUT);
+  pinMode(ylw, OUTPUT);
+  pinMode(buttonPin, INPUT_PULLUP);  // Use internal pull-up resistor
 
   // Connect to Wi-Fi
   WiFi.begin(ssid, password);
@@ -30,18 +61,37 @@ void setup() {
 }
 
 void loop() {
-  // Your regular code here
-  // For example, periodically check for updates
+  // Check for firmware updates periodically
   static unsigned long lastCheck = 0;
-  const unsigned long interval = 10000;  // Check every hour (3600000 milliseconds)
-
+  const unsigned long interval = 10000;  // Check every 10 seconds
   if (millis() - lastCheck > interval) {
     lastCheck = millis();
     checkForUpdates();
   }
 
+  // Read the button state
+  bool currentButtonState = digitalRead(buttonPin) == LOW;  // Active LOW button
+  
+  // Detect button press or release
+  if (currentButtonState != lastButtonState) {
+    lastPressTime = millis();
+    if (currentButtonState) {
+      // Button was pressed
+      Serial.println("Button pressed, starting LED blink...");
+    } else {
+      // Button was released
+      Serial.println("Button released.");
+    }
+    lastButtonState = currentButtonState;
+  }
+
+  // If button is pressed, blink LEDs
+  if (currentButtonState) {
+    blinkLEDs();
+  }
 }
 
+// Function to check for firmware updates
 void checkForUpdates() {
   Serial.println("Checking for firmware updates...");
 
@@ -75,6 +125,7 @@ void checkForUpdates() {
   http.end();
 }
 
+// Function to download and apply the firmware update
 void downloadAndUpdate() {
   HTTPClient http;
 
@@ -130,3 +181,63 @@ void downloadAndUpdate() {
   }
   http.end();
 }
+
+
+void blinkLEDs() {
+  static int redBlinkCount = 0;
+  static int greenBlinkCount = 0;
+  static int yellowBlinkCount = 0;
+  static int blueBlinkCount = 0;
+
+  unsigned long currentMillis = millis();
+
+  // Red LED: Blink 5 times every 1 second
+  if (redBlinkCount < 5 && currentMillis - previousMillisRed >= 1000) {
+    previousMillisRed = currentMillis;
+    redState = (redState == LOW) ? HIGH : LOW;
+    digitalWrite(red, redState);
+    if (redState == LOW) redBlinkCount++;
+  }
+
+  // Green LED: Blink 10 times every 0.5 second
+  if (greenBlinkCount < 10 && currentMillis - previousMillisGreen >= 500) {
+    previousMillisGreen = currentMillis;
+    greenState = (greenState == LOW) ? HIGH : LOW;
+    digitalWrite(grn, greenState);
+    if (greenState == LOW) greenBlinkCount++;
+  }
+
+  // Yellow LED: Blink 3 times every 3 seconds
+  if (yellowBlinkCount < 3 && currentMillis - previousMillisYellow >= 3000) {
+    previousMillisYellow = currentMillis;
+    yellowState = (yellowState == LOW) ? HIGH : LOW;
+    digitalWrite(ylw, yellowState);
+    if (yellowState == LOW) yellowBlinkCount++;
+  }
+
+  // Blue LED: Blink 2 times every 5 seconds
+  if (blueBlinkCount < 2 && currentMillis - previousMillisBlue >= 5000) {
+    previousMillisBlue = currentMillis;
+    blueState = (blueState == LOW) ? HIGH : LOW;
+    digitalWrite(blu, blueState);
+    if (blueState == LOW) blueBlinkCount++;
+  }
+
+  // Reset states after blinking
+  if (redBlinkCount >= 5 && greenBlinkCount >= 10 && yellowBlinkCount >= 3 && blueBlinkCount >= 2) {
+    redState = LOW;
+    greenState = LOW;
+    yellowState = LOW;
+    blueState = LOW;
+    digitalWrite(red, redState);
+    digitalWrite(grn, greenState);
+    digitalWrite(ylw, yellowState);
+    digitalWrite(blu, blueState);
+    // Reset blink counts
+    redBlinkCount = 0;
+    greenBlinkCount = 0;
+    yellowBlinkCount = 0;
+    blueBlinkCount = 0;
+  }
+}
+

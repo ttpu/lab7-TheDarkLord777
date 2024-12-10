@@ -1,10 +1,13 @@
+[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/YA0UV1r_)
 # Lab 7 - IoT 2024
 
 ## Team N:
 
-* Student 1: name,surname,id
+* Student 1: Maxmudbek,Muzaffarov,SE14161
 
-* Student 2: name,surname,id
+* Student 2: Yunus,Isokhonov,SE14335
+
+* Student 3: Jamoliddin,Normamatov,SE13984
 
 etc...
 
