@@ -8,8 +8,8 @@
 #define blu 22
 #define buttonPin 33
 
-const char* ssid = "Bomish";           // Your Wi-Fi SSID
-const char* password = "Yolgizim";   // Your Wi-Fi Password
+const char* ssid = "Redmi 110A";           // Your Wi-Fi SSID
+const char* password = "99999999";   // Your Wi-Fi Password
 
 const char* firmwareUrl = "https://raw.githubusercontent.com/ttpu/lab7-TheDarkLord777/refs/heads/main/task2/data.bin";  // URL to the .bin file
 const float currentVersion = 1.0;    // Current firmware version
@@ -25,8 +25,14 @@ const long intervalGreen = 500;
 const long intervalYellow = 3000; 
 const long intervalBlue = 5000; 
 
+
+int redState = LOW;
+int greenState = LOW;
+int yellowState = LOW;
+int blueState = LOW;
+
 // Variables for button state detection
-bool lastButtonState = HIGH;  // The previous state of the button
+bool lastButtonState = LOW;  // The previous state of the button
 unsigned long lastPressTime = 0; // Time when the button state last changed
 
 void setup() {
@@ -178,47 +184,60 @@ void downloadAndUpdate() {
 
 
 void blinkLEDs() {
+  static int redBlinkCount = 0;
+  static int greenBlinkCount = 0;
+  static int yellowBlinkCount = 0;
+  static int blueBlinkCount = 0;
+
   unsigned long currentMillis = millis();
 
- 
-  if (currentMillis - previousMillisRed >= intervalRed) {
+  // Red LED: Blink 5 times every 1 second
+  if (redBlinkCount < 5 && currentMillis - previousMillisRed >= 1000) {
     previousMillisRed = currentMillis;
-    for (int i = 0; i < 5; i++) {
-      digitalWrite(red, HIGH);
-      delay(100);  // 100ms ON
-      digitalWrite(red, LOW);
-      delay(100);  // 100ms OFF
-    }
+    redState = (redState == LOW) ? HIGH : LOW;
+    digitalWrite(red, redState);
+    if (redState == LOW) redBlinkCount++;
   }
 
-
-  if (currentMillis - previousMillisGreen >= intervalGreen) {
+  // Green LED: Blink 10 times every 0.5 second
+  if (greenBlinkCount < 10 && currentMillis - previousMillisGreen >= 500) {
     previousMillisGreen = currentMillis;
-    for (int i = 0; i < 10; i++) {
-      digitalWrite(grn, HIGH);
-      delay(50);   // 50ms ON
-      digitalWrite(grn, LOW);
-      delay(50);   // 50ms OFF
-    }
+    greenState = (greenState == LOW) ? HIGH : LOW;
+    digitalWrite(grn, greenState);
+    if (greenState == LOW) greenBlinkCount++;
   }
 
-
-  if (currentMillis - previousMillisYellow >= intervalYellow) {
+  // Yellow LED: Blink 3 times every 3 seconds
+  if (yellowBlinkCount < 3 && currentMillis - previousMillisYellow >= 3000) {
     previousMillisYellow = currentMillis;
-    for (int i = 0; i < 3; i++) {
-      digitalWrite(ylw, HIGH);
-      delay(1000);  
-      digitalWrite(ylw, LOW);
-      delay(1000);  
-    }
+    yellowState = (yellowState == LOW) ? HIGH : LOW;
+    digitalWrite(ylw, yellowState);
+    if (yellowState == LOW) yellowBlinkCount++;
   }
-  if (currentMillis - previousMillisBlue >= intervalBlue) {
+
+  // Blue LED: Blink 2 times every 5 seconds
+  if (blueBlinkCount < 2 && currentMillis - previousMillisBlue >= 5000) {
     previousMillisBlue = currentMillis;
-    for (int i = 0; i < 2; i++) {
-      digitalWrite(blu, HIGH);
-      delay(2500);  
-      digitalWrite(blu, LOW);
-      delay(2500);  
-    }
+    blueState = (blueState == LOW) ? HIGH : LOW;
+    digitalWrite(blu, blueState);
+    if (blueState == LOW) blueBlinkCount++;
+  }
+
+  // Reset states after blinking
+  if (redBlinkCount >= 5 && greenBlinkCount >= 10 && yellowBlinkCount >= 3 && blueBlinkCount >= 2) {
+    redState = LOW;
+    greenState = LOW;
+    yellowState = LOW;
+    blueState = LOW;
+    digitalWrite(red, redState);
+    digitalWrite(grn, greenState);
+    digitalWrite(ylw, yellowState);
+    digitalWrite(blu, blueState);
+    // Reset blink counts
+    redBlinkCount = 0;
+    greenBlinkCount = 0;
+    yellowBlinkCount = 0;
+    blueBlinkCount = 0;
   }
 }
+
