@@ -5,9 +5,9 @@
 const char* ssid = "Redmi 110A";           // Your Wi-Fi SSID
 const char* password = "99999999";   // Your Wi-Fi Password
 
-const char* firmwareUrl = "https://raw.githubusercontent.com/ttpu/lab7-TheDarkLord777/refs/heads/main/task2/data.bin";  // URL to the .bin file
-const float currentVersion = 1.0;    // Current firmware version
-const char* versionUrl = "https://raw.githubusercontent.com/ttpu/lab7-TheDarkLord777/refs/heads/main/task2/version";  // URL to version text file
+const char* firmwareUrl = "https://ttpu.github.io/lab7-TheDarkLord777/task2/data.bin";  // URL to the .bin file
+const float currentVersion = 1.2;    // Current firmware version
+const char* versionUrl = "https://ttpu.github.io/lab7-TheDarkLord777/task2/version";  // URL to version text file
 
  
 const int buttonPin = 33; 
@@ -92,11 +92,11 @@ void blinkLEDs() {
   unsigned long currentMillis = millis(); 
  
   // Red LED blinking 
-  if (redBlinkCount < 5 && currentMillis - prevRedTime >= redInterval) { 
+  if (redBlinkCount < 5*2 && currentMillis - prevRedTime >= redInterval) { 
     prevRedTime = currentMillis; 
     digitalWrite(redLED, !digitalRead(redLED)); // Toggle LED 
     redBlinkCount++; 
-    if (redBlinkCount == 5) digitalWrite(redLED, LOW); // Ensure it's off after finishing 
+    if (redBlinkCount == 5*2) digitalWrite(redLED, LOW); // Ensure it's off after finishing 
   } 
  
   // Green LED blinking 
@@ -124,7 +124,7 @@ void blinkLEDs() {
   } 
  
   // Check if all LEDs have completed blinking 
-  if (redBlinkCount >= 5 && greenBlinkCount >= 10*2 && yellowBlinkCount >= 3*2 && blueBlinkCount >= 2*2) { 
+  if (redBlinkCount >= 5*2 && greenBlinkCount >= 10*2 && yellowBlinkCount >= 3*2 && blueBlinkCount >= 2*2) { 
     blinking = false; 
     digitalWrite(redLED, LOW); 
     digitalWrite(greenLED, LOW); 
