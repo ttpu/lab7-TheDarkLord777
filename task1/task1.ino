@@ -2,13 +2,33 @@
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 
-const char* ssid = "xxxxxx";          // Replace with your Wi-Fi SSID
-const char* password = "xxxxxx";  // Replace with your Wi-Fi Password
+#define red 4
+#define ylw 19
+#define grn 5
+#define blu 22
+
+const char* ssid = "Bomish";          // Replace with your Wi-Fi SSID
+const char* password = "Yolgizim";  // Replace with your Wi-Fi Password
+
+unsigned long previousMillisRed = 0; 
+unsigned long previousMillisGreen = 0;
+unsigned long previousMillisYellow = 0; 
+unsigned long previousMillisBlue = 0; 
+
+const long intervalRed = 1000;  
+const long intervalGreen = 500;  
+const long intervalYellow = 3000; 
+const long intervalBlue = 5000;  
 
 void setup() {
   Serial.begin(115200);
+  
   Serial.println("Booting...");
-
+  pinMode(red,OUTPUT);
+  pinMode(grn,OUTPUT);
+  pinMode(blu,OUTPUT);
+  pinMode(ylw,OUTPUT);
+  
   // Connect to your Wi-Fi network
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
@@ -41,6 +61,8 @@ void setup() {
     else if (error == OTA_CONNECT_ERROR) Serial.println("Connection Failed");
     else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
     else if (error == OTA_END_ERROR)     Serial.println("End Failed");
+
+    
   });
 
   // Start the OTA service
@@ -55,4 +77,24 @@ void setup() {
 void loop() {
   // Handle OTA updates
   ArduinoOTA.handle();
+
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillisRed >= intervalRed) {
+    previousMillisRed = currentMillis;
+    digitalWrite(red, !digitalRead(red));  
+  }
+
+  if (currentMillis - previousMillisGreen >= intervalGreen) {
+    previousMillisGreen = currentMillis;
+    digitalWrite(grn, !digitalRead(grn)); 
+  }
+
+   if (currentMillis - previousMillisYellow >= intervalYellow) {
+    previousMillisYellow = currentMillis;
+    digitalWrite(ylw, !digitalRead(ylw));  
+  }
+  if (currentMillis - previousMillisBlue >= intervalBlue) {
+    previousMillisBlue = currentMillis;
+    digitalWrite(blu, !digitalRead(blu)); 
+  }
 }
